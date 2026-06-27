@@ -59,9 +59,9 @@ with col1:
             progress_bar = st.progress(0)
             count_placeholder = st.empty()
             
-            total_target = 150
+            total_target = 250
             for i in range(1, 143): 
-                progress = min(i / total_target, 1.0)
+                progress = i / total_target
                 progress_bar.progress(progress)
                 status_placeholder.markdown("### 🔍 Searching Google Maps...")
                 count_placeholder.markdown(f"### **{i} / {total_target} Businesses**")
