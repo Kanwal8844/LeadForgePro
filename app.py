@@ -59,7 +59,7 @@ with col1:
             progress_bar = st.progress(0)
             count_placeholder = st.empty()
             
-            total_target = 50
+            total_target = 150
             for i in range(1, 143): 
                 progress = min(i / total_target, 1.0)
                 progress_bar.progress(progress)
