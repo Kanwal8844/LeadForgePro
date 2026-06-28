@@ -12,6 +12,7 @@ conn.commit()
 
 # --- GOOGLE SHEET CONNECTION ---
 scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive"]
+# Yaad rakhein: VPS par bhi 'credentials.json' hona zaroori hai
 creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
 client = gspread.authorize(creds)
 
@@ -51,18 +52,25 @@ st.markdown("<h1 style='text-align: center; color: #007BFF;'>🚀 LeadForge Pro 
 if st.button("🔄 REFRESH LIVE DATA"):
     try:
         # Sheet se data read karein
-        data = client.open("LeadData").sheet1.get_all_records()
-        df = pd.DataFrame(data)
+        sheet = client.open("LeadData").sheet1
+        # Sari values uthao
+        raw_data = sheet.get_all_values() 
         
-        if not df.empty:
-            st.success(f"✅ Found {len(df)} latest leads!")
+        if len(raw_data) > 1:
+            # Pehli row ko headers aur baqi ko data banayein
+            df = pd.DataFrame(raw_data[1:], columns=raw_data[0])
+            
+            # Khali rows ko hata dein
+            df = df[df['Business Name'] != '']
+            
+            st.success(f"✅ Showing {len(df)} latest leads!")
             st.dataframe(df)
             
             # Download Button
             csv = df.to_csv(index=False).encode('utf-8')
             st.download_button("💾 DOWNLOAD CSV", csv, "leads.csv", "text/csv")
         else:
-            st.warning("⚠️ No leads found. Run your local scraper first!")
+            st.warning("⚠️ Sheet mein data nahi hai. Pehle apne PC se scraper chalayein!")
     except Exception as e:
         st.error(f"Error connecting to data: {e}")
 
